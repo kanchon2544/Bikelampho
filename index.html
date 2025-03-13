@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: url('gta.jpg') no-repeat center center/cover;
+            background: url(gta.jpg) no-repeat center center/cover;
             margin: 0;
             padding: 0;
             display: flex;
@@ -17,7 +17,7 @@
             flex-direction: column;
         }
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -70,27 +70,33 @@
             text-align: center;
             max-width: 400px;
         }
+        .receipt h3 {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <button onclick="toggleLanguage()">เปลี่ยนภาษา / Change Language</button>
-        <h2 id="title">Bike Rental Booking</h2>
-        <label id="bikeLabel">หมายเลขจักรยาน / สีจักรยาน</label>
+        <h2>Bike Rental Booking</h2>
+        <label>หมายเลขจักรยาน / สีจักรยาน</label>
         <input type="text" id="bikeNumber" placeholder="หมายเลขจักรยาน">
         <input type="text" id="color" placeholder="สีจักรยาน">
-        <label id="nicknameLabel">ชื่อเล่น</label>
+
+        <label>ชื่อเล่น</label>
         <input type="text" id="nickname" placeholder="ชื่อเล่น">
-        <label id="phoneLabel">เบอร์โทร</label>
+
+        <label>เบอร์โทร</label>
         <input type="tel" id="phone" placeholder="เบอร์โทร">
-        <label id="paymentLabel">วิธีการชำระเงิน</label>
+
+        <label>วิธีการชำระเงิน</label>
         <select id="paymentMethod" onchange="togglePayment()">
             <option value="cash">เงินสด</option>
             <option value="transfer">โอน</option>
         </select>
         <input type="number" id="cashAmount" placeholder="จำนวนเงิน" style="display: none;">
         <input type="file" id="transferSlip" accept="image/*" style="display: none;">
-        <label id="rentalLabel">จำนวนชั่วโมงที่เช่า</label>
+
+        <label>จำนวนชั่วโมงที่เช่า</label>
         <select id="rentalDuration">
             <option value="1 hour">1 ชั่วโมง</option>
             <option value="2 hours">2 ชั่วโมง</option>
@@ -100,28 +106,40 @@
             <option value="6 hours">6 ชั่วโมง</option>
             <option value="1 day">1 วัน</option>
         </select>
-        <label id="notesLabel">หมายเหตุ</label>
+
+        <label>หมายเหตุ</label>
         <input type="text" id="notes" placeholder="หมายเหตุ">
+
         <button class="confirm-button" onclick="confirmBooking()">ยืนยันการจอง!!</button>
     </div>
+
+    <div class="receipt" id="receipt">
+        <h3>บิลสรุปการเช่า</h3>
+        <p id="receiptContent"></p>
+    </div>
+
     <script>
-        function toggleLanguage() {
-            const isEnglish = document.getElementById('title').innerText === "Bike Rental Booking";
-            document.getElementById('title').innerText = isEnglish ? "เช่าจักรยาน" : "Bike Rental Booking";
-            document.getElementById('bikeLabel').innerText = isEnglish ? "หมายเลขจักรยาน / สีจักรยาน" : "Bike Number / Color";
-            document.getElementById('nicknameLabel').innerText = isEnglish ? "ชื่อเล่น" : "Nickname";
-            document.getElementById('phoneLabel').innerText = isEnglish ? "เบอร์โทร" : "Phone Number";
-            document.getElementById('paymentLabel').innerText = isEnglish ? "วิธีการชำระเงิน" : "Payment Method";
-            document.getElementById('rentalLabel').innerText = isEnglish ? "จำนวนชั่วโมงที่เช่า" : "Rental Duration";
-            document.getElementById('notesLabel').innerText = isEnglish ? "หมายเหตุ" : "Notes";
-        }
         function togglePayment() {
             let method = document.getElementById("paymentMethod").value;
             document.getElementById("cashAmount").style.display = method === "cash" ? "block" : "none";
             document.getElementById("transferSlip").style.display = method === "transfer" ? "block" : "none";
         }
+
         function confirmBooking() {
-            alert("การจองสำเร็จ!");
+            let bikeNumber = document.getElementById("bikeNumber").value;
+            let color = document.getElementById("color").value;
+            let nickname = document.getElementById("nickname").value;
+            let phone = document.getElementById("phone").value;
+            let paymentMethod = document.getElementById("paymentMethod").value;
+            let amount = paymentMethod === "cash" ? document.getElementById("cashAmount").value : "โอนเงิน";
+            let duration = document.getElementById("rentalDuration").value;
+            let notes = document.getElementById("notes").value;
+            let bookingTime = new Date().toLocaleString();
+
+            let receiptText = `หมายเลขจักรยาน: ${bikeNumber} \nสีจักรยาน: ${color} \nชื่อเล่น: ${nickname} \nเบอร์โทร: ${phone} \nวิธีชำระเงิน: ${paymentMethod} (${amount}) \nจำนวนชั่วโมงที่เช่า: ${duration} \nหมายเหตุ: ${notes} \nเวลาที่จอง: ${bookingTime}`;
+            
+            document.getElementById("receiptContent").innerText = receiptText;
+            document.getElementById("receipt").style.display = "block";
         }
     </script>
 </body>
