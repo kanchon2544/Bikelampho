@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เช่าจักรยาน</title>
     <style>
-         body {
+        body {
             font-family: 'Poppins', sans-serif;
             background: url(gta.jpg) no-repeat center center/cover;
             margin: 0;
@@ -15,6 +15,19 @@
             align-items: center;
             height: 100vh;
             flex-direction: column;
+            position: relative;
+        }
+        .language-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .container {
             background: rgba(255, 255, 255, 0.9);
@@ -99,28 +112,30 @@
 </head>
 <body>
 
+    <button class="language-toggle" id="langToggle">🇹🇭</button>
+
     <div class="container">
         <div class="time-display" id="clock">00:00:00</div>
-        <h2 id="title">การจองเช่าจักรยาน</h2>
+        <h2 data-lang="th:การจองเช่าจักรยาน|en:Bike Rental">การจองเช่าจักรยาน</h2>
 
         <div id="closedMessage" class="closed-message">ตอนนี้ร้านปิดแล้ว กรุณามาใช้บริการใหม่อีกวัน</div>
 
-        <label for="bikeNumber">หมายเลขจักรยาน / สี</label>
+        <label data-lang="th:หมายเลขจักรยาน / สี|en:Bike Number / Color" for="bikeNumber">หมายเลขจักรยาน / สี</label>
         <input type="text" id="bikeNumber">
 
-        <label for="nickname">ชื่อเล่น</label>
+        <label data-lang="th:ชื่อเล่น|en:Nickname" for="nickname">ชื่อเล่น</label>
         <input type="text" id="nickname">
 
-        <label for="phone">เบอร์โทร</label>
+        <label data-lang="th:เบอร์โทร|en:Phone Number" for="phone">เบอร์โทร</label>
         <input type="text" id="phone">
 
-        <label for="payment">วิธีชำระเงิน</label>
+        <label data-lang="th:วิธีชำระเงิน|en:Payment Method" for="payment">วิธีชำระเงิน</label>
         <select id="payment">
             <option value="cash">เงินสด</option>
             <option value="transfer">โอนเงิน</option>
         </select>
 
-        <label for="rentalTime">ระยะเวลาเช่า</label>
+        <label data-lang="th:ระยะเวลาเช่า|en:Rental Duration" for="rentalTime">ระยะเวลาเช่า</label>
         <select id="rentalTime">
             <option>1 ชั่วโมง</option>
             <option>2 ชั่วโมง</option>
@@ -131,63 +146,36 @@
             <option>1 วัน</option>
         </select>
 
-        <label for="note">หมายเหตุ</label>
+        <label data-lang="th:หมายเหตุ|en:Note" for="note">หมายเหตุ</label>
         <input type="text" id="note">
 
         <button class="button" id="submitButton">ยืนยันการจอง</button>
     </div>
 
-    <div class="rental-summary" id="rentalSummary">
-        <h3>รายละเอียดการเช่า</h3>
-        <div class="summary-item">⏳ เวลาจอง: <span id="bookingTime"></span></div>
-        <div class="summary-item">🚲 จักรยานหมายเลข: <span id="summaryBikeNumber"></span></div>
-        <div class="summary-item">🙋‍♂️ ชื่อเล่น: <span id="summaryNickname"></span></div>
-        <div class="summary-item">📞 เบอร์โทร: <span id="summaryPhone"></span></div>
-        <div class="summary-item">💰 วิธีชำระเงิน: <span id="summaryPayment"></span></div>
-        <div class="summary-item">⌛ ระยะเวลาเช่า: <span id="summaryRentalTime"></span></div>
-        <div class="summary-item">📝 หมายเหตุ: <span id="summaryNote"></span></div>
-    </div>
-
     <script>
+        let currentLang = "th";
+
+        document.getElementById("langToggle").addEventListener("click", function() {
+            currentLang = (currentLang === "th") ? "en" : "th";
+            this.innerText = (currentLang === "th") ? "🇹🇭" : "🇺🇸";
+            updateLanguage();
+        });
+
+        function updateLanguage() {
+            document.querySelectorAll("[data-lang]").forEach(element => {
+                let translations = element.getAttribute("data-lang").split("|");
+                let selectedText = translations.find(t => t.startsWith(currentLang + ":")).split(":")[1];
+                element.innerText = selectedText;
+            });
+        }
+
         function updateClock() {
             let now = new Date();
             let hours = now.getHours().toString().padStart(2, '0');
             let minutes = now.getMinutes().toString().padStart(2, '0');
             let seconds = now.getSeconds().toString().padStart(2, '0');
-            let currentTime = `${hours}:${minutes}:${seconds}`;
-
-            document.getElementById("clock").innerText = `เวลาตอนนี้: ${currentTime}`;
-            checkStoreStatus(hours);
+            document.getElementById("clock").innerText = `เวลาตอนนี้: ${hours}:${minutes}:${seconds}`;
         }
-
-        function checkStoreStatus(hours) {
-            let container = document.querySelector(".container");
-            let closedMessage = document.getElementById("closedMessage");
-            let submitButton = document.getElementById("submitButton");
-
-            if (hours >= 20 || hours < 9) {
-                container.classList.add("disabled");
-                closedMessage.style.display = "block";
-                submitButton.disabled = true;
-            } else {
-                container.classList.remove("disabled");
-                closedMessage.style.display = "none";
-                submitButton.disabled = false;
-            }
-        }
-
-        document.getElementById("submitButton").addEventListener("click", function() {
-            let now = new Date().toLocaleTimeString();
-            document.getElementById("bookingTime").innerText = now;
-            document.getElementById("summaryBikeNumber").innerText = document.getElementById("bikeNumber").value;
-            document.getElementById("summaryNickname").innerText = document.getElementById("nickname").value;
-            document.getElementById("summaryPhone").innerText = document.getElementById("phone").value;
-            document.getElementById("summaryPayment").innerText = document.getElementById("payment").value;
-            document.getElementById("summaryRentalTime").innerText = document.getElementById("rentalTime").value;
-            document.getElementById("summaryNote").innerText = document.getElementById("note").value;
-
-            document.getElementById("rentalSummary").style.display = "block";
-        });
 
         setInterval(updateClock, 1000);
         updateClock();
