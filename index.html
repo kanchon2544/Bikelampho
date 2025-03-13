@@ -29,7 +29,16 @@
             border-radius: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-        .container {
+        .clock {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        .container, .receipt {
             background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
@@ -37,9 +46,7 @@
             width: 90%;
             max-width: 400px;
             backdrop-filter: blur(10px);
-        }
-        h2 {
-            margin-bottom: 10px;
+            text-align: center;
         }
         label {
             display: block;
@@ -54,6 +61,9 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+        .hidden {
+            display: none;
+        }
         .button {
             margin-top: 15px;
             background: #28a745;
@@ -67,46 +77,12 @@
         .button:hover {
             background: #218838;
         }
-        .time-display {
-            text-align: center;
+        .closed-message {
+            color: red;
             font-size: 18px;
             font-weight: bold;
-            background: black;
-            color: white;
-            padding: 5px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-        .closed-message {
-            display: none;
-            padding: 10px;
-            background: #ff4444;
-            color: white;
-            font-weight: bold;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .disabled {
-            pointer-events: none;
-            opacity: 0.6;
-        }
-        .rental-summary {
-            display: none;
-            width: 100%;
-            max-width: 400px;
-            background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: left;
-        }
-        .rental-summary h3 {
             text-align: center;
-            margin-bottom: 10px;
-        }
-        .summary-item {
-            margin: 5px 0;
-            font-weight: bold;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -114,28 +90,37 @@
 
     <button class="language-toggle" id="langToggle">🇹🇭</button>
 
-    <div class="container">
-        <div class="time-display" id="clock">00:00:00</div>
-        <h2 data-lang="th:การจองเช่าจักรยาน|en:Bike Rental">การจองเช่าจักรยาน</h2>
+    <div class="clock" id="clock">--:--:--</div>
 
-        <div id="closedMessage" class="closed-message">ตอนนี้ร้านปิดแล้ว กรุณามาใช้บริการใหม่อีกวัน</div>
+    <div class="container" id="bookingForm">
+        <h2>การจองเช่าจักรยาน</h2>
 
-        <label data-lang="th:หมายเลขจักรยาน / สี|en:Bike Number / Color" for="bikeNumber">หมายเลขจักรยาน / สี</label>
+        <label for="bikeNumber">หมายเลขจักรยาน / สี</label>
         <input type="text" id="bikeNumber">
 
-        <label data-lang="th:ชื่อเล่น|en:Nickname" for="nickname">ชื่อเล่น</label>
+        <label for="nickname">ชื่อเล่น</label>
         <input type="text" id="nickname">
 
-        <label data-lang="th:เบอร์โทร|en:Phone Number" for="phone">เบอร์โทร</label>
+        <label for="phone">เบอร์โทร</label>
         <input type="text" id="phone">
 
-        <label data-lang="th:วิธีชำระเงิน|en:Payment Method" for="payment">วิธีชำระเงิน</label>
+        <label for="payment">วิธีชำระเงิน</label>
         <select id="payment">
             <option value="cash">เงินสด</option>
             <option value="transfer">โอนเงิน</option>
         </select>
 
-        <label data-lang="th:ระยะเวลาเช่า|en:Rental Duration" for="rentalTime">ระยะเวลาเช่า</label>
+        <div id="cashAmountDiv" class="hidden">
+            <label for="cashAmount">จำนวนเงิน (บาท)</label>
+            <input type="number" id="cashAmount" min="0">
+        </div>
+
+        <div id="slipUploadDiv" class="hidden">
+            <label for="slipUpload">แนบสลิป</label>
+            <input type="file" id="slipUpload" accept="image/*">
+        </div>
+
+        <label for="rentalTime">ระยะเวลาเช่า</label>
         <select id="rentalTime">
             <option>1 ชั่วโมง</option>
             <option>2 ชั่วโมง</option>
@@ -146,39 +131,64 @@
             <option>1 วัน</option>
         </select>
 
-        <label data-lang="th:หมายเหตุ|en:Note" for="note">หมายเหตุ</label>
+        <label for="note">หมายเหตุ</label>
         <input type="text" id="note">
 
         <button class="button" id="submitButton">ยืนยันการจอง</button>
     </div>
 
+    <div class="receipt hidden" id="receipt">
+        <h2>✅ รายละเอียดการเช่า</h2>
+        <p><strong>หมายเลขจักรยาน:</strong> <span id="rBikeNumber"></span></p>
+        <p><strong>ชื่อเล่น:</strong> <span id="rNickname"></span></p>
+        <p><strong>เบอร์โทร:</strong> <span id="rPhone"></span></p>
+        <p><strong>วิธีชำระเงิน:</strong> <span id="rPayment"></span></p>
+        <p id="rCashAmount" class="hidden"><strong>จำนวนเงิน:</strong> <span></span> บาท</p>
+        <p><strong>ระยะเวลาเช่า:</strong> <span id="rRentalTime"></span></p>
+        <p><strong>หมายเหตุ:</strong> <span id="rNote"></span></p>
+        <p><strong>เวลายืนยันการเช่า:</strong> <span id="rTime"></span></p>
+    </div>
+
     <script>
-        let currentLang = "th";
-
-        document.getElementById("langToggle").addEventListener("click", function() {
-            currentLang = (currentLang === "th") ? "en" : "th";
-            this.innerText = (currentLang === "th") ? "🇹🇭" : "🇺🇸";
-            updateLanguage();
-        });
-
-        function updateLanguage() {
-            document.querySelectorAll("[data-lang]").forEach(element => {
-                let translations = element.getAttribute("data-lang").split("|");
-                let selectedText = translations.find(t => t.startsWith(currentLang + ":")).split(":")[1];
-                element.innerText = selectedText;
-            });
-        }
-
         function updateClock() {
-            let now = new Date();
-            let hours = now.getHours().toString().padStart(2, '0');
-            let minutes = now.getMinutes().toString().padStart(2, '0');
-            let seconds = now.getSeconds().toString().padStart(2, '0');
-            document.getElementById("clock").innerText = `เวลาตอนนี้: ${hours}:${minutes}:${seconds}`;
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+
+            let formattedTime = 
+                (hours < 10 ? "0" : "") + hours + ":" + 
+                (minutes < 10 ? "0" : "") + minutes + ":" + 
+                (seconds < 10 ? "0" : "") + seconds;
+
+            document.getElementById("clock").innerText = formattedTime;
         }
 
         setInterval(updateClock, 1000);
         updateClock();
+
+        document.getElementById("submitButton").addEventListener("click", function() {
+            let now = new Date();
+            let timeConfirmed = now.toLocaleTimeString();
+
+            document.getElementById("rBikeNumber").innerText = document.getElementById("bikeNumber").value;
+            document.getElementById("rNickname").innerText = document.getElementById("nickname").value;
+            document.getElementById("rPhone").innerText = document.getElementById("phone").value;
+            document.getElementById("rPayment").innerText = document.getElementById("payment").value;
+            document.getElementById("rRentalTime").innerText = document.getElementById("rentalTime").value;
+            document.getElementById("rNote").innerText = document.getElementById("note").value;
+            document.getElementById("rTime").innerText = timeConfirmed;
+
+            if (document.getElementById("payment").value === "cash") {
+                document.getElementById("rCashAmount").classList.remove("hidden");
+                document.getElementById("rCashAmount").querySelector("span").innerText = document.getElementById("cashAmount").value;
+            } else {
+                document.getElementById("rCashAmount").classList.add("hidden");
+            }
+
+            document.getElementById("bookingForm").classList.add("hidden");
+            document.getElementById("receipt").classList.remove("hidden");
+        });
     </script>
 
 </body>
