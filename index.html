@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เช่าจักรยาน</title>
     <style>
-        body {
+         body {
             font-family: 'Poppins', sans-serif;
             background: url(gta.jpg) no-repeat center center/cover;
             margin: 0;
@@ -54,53 +54,73 @@
         .button:hover {
             background: #218838;
         }
-        .language-toggle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-        }
-        .info-box {
-            margin-top: 15px;
-            padding: 10px;
-            background: #dff0d8;
-            border-left: 5px solid #28a745;
-            display: none;
-        }
         .time-display {
             text-align: center;
-            font-size: 14px;
-            margin-bottom: 10px;
-            background: #000;
+            font-size: 18px;
+            font-weight: bold;
+            background: black;
             color: white;
             padding: 5px;
             border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .closed-message {
+            display: none;
+            padding: 10px;
+            background: #ff4444;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .rental-summary {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+        .rental-summary h3 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .summary-item {
+            margin: 5px 0;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img src="thaieng.png" class="language-toggle" width="30" onclick="changeLanguage()">
-        <div class="time-display" id="timeDisplay"></div>
+        <div class="time-display" id="clock">00:00:00</div>
         <h2 id="title">การจองเช่าจักรยาน</h2>
-        
-        <label for="bikeNumber" id="labelBike">หมายเลขจักรยาน / สี</label>
-        <input type="text" id="bikeNumber" placeholder="กรอกหมายเลขจักรยาน">
 
-        <label for="nickname" id="labelNickname">ชื่อเล่น</label>
-        <input type="text" id="nickname" placeholder="กรอกชื่อเล่น">
+        <div id="closedMessage" class="closed-message">ตอนนี้ร้านปิดแล้ว กรุณามาใช้บริการใหม่อีกวัน</div>
 
-        <label for="phone" id="labelPhone">เบอร์โทร</label>
-        <input type="text" id="phone" placeholder="กรอกเบอร์โทร">
+        <label for="bikeNumber">หมายเลขจักรยาน / สี</label>
+        <input type="text" id="bikeNumber">
 
-        <label for="payment" id="labelPayment">วิธีชำระเงิน</label>
+        <label for="nickname">ชื่อเล่น</label>
+        <input type="text" id="nickname">
+
+        <label for="phone">เบอร์โทร</label>
+        <input type="text" id="phone">
+
+        <label for="payment">วิธีชำระเงิน</label>
         <select id="payment">
             <option value="cash">เงินสด</option>
             <option value="transfer">โอนเงิน</option>
         </select>
 
-        <label for="rentalTime" id="labelRentalTime">ระยะเวลาเช่า</label>
+        <label for="rentalTime">ระยะเวลาเช่า</label>
         <select id="rentalTime">
             <option>1 ชั่วโมง</option>
             <option>2 ชั่วโมง</option>
@@ -111,82 +131,66 @@
             <option>1 วัน</option>
         </select>
 
-        <label for="note" id="labelNote">หมายเหตุ</label>
-        <input type="text" id="note" placeholder="หมายเหตุเพิ่มเติม">
+        <label for="note">หมายเหตุ</label>
+        <input type="text" id="note">
 
-        <button class="button" onclick="confirmBooking()">ยืนยันการจอง</button>
+        <button class="button" id="submitButton">ยืนยันการจอง</button>
+    </div>
 
-        <div class="info-box" id="infoBox">
-            <h3>ข้อมูลการจอง</h3>
-            <p id="bookingDetails"></p>
-        </div>
+    <div class="rental-summary" id="rentalSummary">
+        <h3>รายละเอียดการเช่า</h3>
+        <div class="summary-item">⏳ เวลาจอง: <span id="bookingTime"></span></div>
+        <div class="summary-item">🚲 จักรยานหมายเลข: <span id="summaryBikeNumber"></span></div>
+        <div class="summary-item">🙋‍♂️ ชื่อเล่น: <span id="summaryNickname"></span></div>
+        <div class="summary-item">📞 เบอร์โทร: <span id="summaryPhone"></span></div>
+        <div class="summary-item">💰 วิธีชำระเงิน: <span id="summaryPayment"></span></div>
+        <div class="summary-item">⌛ ระยะเวลาเช่า: <span id="summaryRentalTime"></span></div>
+        <div class="summary-item">📝 หมายเหตุ: <span id="summaryNote"></span></div>
     </div>
 
     <script>
-        let currentLang = "th";
+        function updateClock() {
+            let now = new Date();
+            let hours = now.getHours().toString().padStart(2, '0');
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+            let seconds = now.getSeconds().toString().padStart(2, '0');
+            let currentTime = `${hours}:${minutes}:${seconds}`;
 
-        function changeLanguage() {
-            const translations = {
-                th: {
-                    title: "การจองเช่าจักรยาน",
-                    bike: "หมายเลขจักรยาน / สี",
-                    nickname: "ชื่อเล่น",
-                    phone: "เบอร์โทร",
-                    payment: "วิธีชำระเงิน",
-                    rentalTime: "ระยะเวลาเช่า",
-                    note: "หมายเหตุ",
-                    confirm: "ยืนยันการจอง"
-                },
-                en: {
-                    title: "Bike Rental Booking",
-                    bike: "Bike Number / Color",
-                    nickname: "Nickname",
-                    phone: "Phone Number",
-                    payment: "Payment Method",
-                    rentalTime: "Rental Duration",
-                    note: "Notes",
-                    confirm: "Confirm Booking"
-                }
-            };
-
-            currentLang = currentLang === "th" ? "en" : "th";
-
-            document.getElementById("title").innerText = translations[currentLang].title;
-            document.getElementById("labelBike").innerText = translations[currentLang].bike;
-            document.getElementById("labelNickname").innerText = translations[currentLang].nickname;
-            document.getElementById("labelPhone").innerText = translations[currentLang].phone;
-            document.getElementById("labelPayment").innerText = translations[currentLang].payment;
-            document.getElementById("labelRentalTime").innerText = translations[currentLang].rentalTime;
-            document.getElementById("labelNote").innerText = translations[currentLang].note;
-            document.querySelector(".button").innerText = translations[currentLang].confirm;
+            document.getElementById("clock").innerText = `เวลาตอนนี้: ${currentTime}`;
+            checkStoreStatus(hours);
         }
 
-        function confirmBooking() {
-            const bikeNumber = document.getElementById("bikeNumber").value;
-            const nickname = document.getElementById("nickname").value;
-            const phone = document.getElementById("phone").value;
-            const payment = document.getElementById("payment").value;
-            const rentalTime = document.getElementById("rentalTime").value;
-            const note = document.getElementById("note").value;
-            const currentTime = new Date().toLocaleTimeString();
+        function checkStoreStatus(hours) {
+            let container = document.querySelector(".container");
+            let closedMessage = document.getElementById("closedMessage");
+            let submitButton = document.getElementById("submitButton");
 
-            document.getElementById("bookingDetails").innerHTML = `
-                <strong>หมายเลขจักรยาน:</strong> ${bikeNumber} <br>
-                <strong>ชื่อเล่น:</strong> ${nickname} <br>
-                <strong>เบอร์โทร:</strong> ${phone} <br>
-                <strong>วิธีชำระเงิน:</strong> ${payment} <br>
-                <strong>ระยะเวลาเช่า:</strong> ${rentalTime} <br>
-                <strong>หมายเหตุ:</strong> ${note} <br>
-                <strong>เวลาจอง:</strong> ${currentTime}
-            `;
-            document.getElementById("infoBox").style.display = "block";
+            if (hours >= 20 || hours < 9) {
+                container.classList.add("disabled");
+                closedMessage.style.display = "block";
+                submitButton.disabled = true;
+            } else {
+                container.classList.remove("disabled");
+                closedMessage.style.display = "none";
+                submitButton.disabled = false;
+            }
         }
 
-        function updateTime() {
-            document.getElementById("timeDisplay").innerText = "ร้านเปิด 09:00 - ปิด 20:00";
-        }
-        setInterval(updateTime, 1000);
-        updateTime();
+        document.getElementById("submitButton").addEventListener("click", function() {
+            let now = new Date().toLocaleTimeString();
+            document.getElementById("bookingTime").innerText = now;
+            document.getElementById("summaryBikeNumber").innerText = document.getElementById("bikeNumber").value;
+            document.getElementById("summaryNickname").innerText = document.getElementById("nickname").value;
+            document.getElementById("summaryPhone").innerText = document.getElementById("phone").value;
+            document.getElementById("summaryPayment").innerText = document.getElementById("payment").value;
+            document.getElementById("summaryRentalTime").innerText = document.getElementById("rentalTime").value;
+            document.getElementById("summaryNote").innerText = document.getElementById("note").value;
+
+            document.getElementById("rentalSummary").style.display = "block";
+        });
+
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
 
 </body>
