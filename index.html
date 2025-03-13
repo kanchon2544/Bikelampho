@@ -1,98 +1,130 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ / ลงทะเบียน</title>
+    <title>ข้อมูลการเช่าจักรยาน</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            max-width: 1200px;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background: #28a745;
+            color: white;
+        }
+        .actions button {
+            padding: 8px 12px;
+            border: none;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .edit { background: #ffc107; }
+        .share { background: #17a2b8; color: white; }
+        .print { background: #007bff; color: white; }
+        .logout {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        .logout:hover {
+            background: #c82333;
         }
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 300px;
-        }
-        input {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        button {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .btn-primary { background: #28a745; color: white; }
-        .btn-google { background: #007bff; color: white; }
-        .btn-facebook { background: #3b5998; color: white; }
     </style>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 <body>
     <div class="container">
-        <h2>เข้าสู่ระบบ / ลงทะเบียน</h2>
-        <input type="text" id="phone" placeholder="เบอร์โทร">
-        <input type="password" id="password" placeholder="รหัสผ่าน (ตัวเลข 6 ตัว)" maxlength="6">
-        <button class="btn-primary" onclick="loginWithPhone()">เข้าสู่ระบบ / ลงทะเบียน</button>
-        <button class="btn-google" onclick="loginWithGoogle()">เข้าสู่ระบบด้วย Google</button>
-        <button class="btn-facebook" onclick="loginWithFacebook()">เข้าสู่ระบบด้วย Facebook</button>
+        <h2>ข้อมูลการเช่าจักรยาน</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>หมายเลข/สีจักรยาน</th>
+                    <th>เวลาเริ่มเช่า</th>
+                    <th>เวลาคืน</th>
+                    <th>ชื่อเล่น</th>
+                    <th>เบอร์โทร</th>
+                    <th>วิธีชำระเงิน</th>
+                    <th>จำนวนเงิน</th>
+                    <th>สลิป</th>
+                    <th>คืนจักรยาน</th>
+                    <th>หมายเหตุ</th>
+                    <th>การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody id="rentalData"></tbody>
+        </table>
+        <button class="logout" id="logoutBtn">ออกจากระบบ</button>
     </div>
     
     <script>
-        function loginWithPhone() {
-            const phone = document.getElementById("phone").value;
-            const password = document.getElementById("password").value;
-            if (phone && password.length === 6) {
-                alert("เข้าสู่ระบบสำเร็จ");
-                window.location.href = "rental_management.html";
-            } else {
-                alert("กรุณากรอกข้อมูลให้ถูกต้อง");
-            }
-        }
-        
-        function loginWithGoogle() {
-            google.accounts.id.initialize({
-                client_id: "YOUR_GOOGLE_CLIENT_ID",
-                callback: (response) => {
-                    console.log(response);
-                    window.location.href = "rental_management.html";
-                }
+        document.addEventListener("DOMContentLoaded", function() {
+            let rentalData = JSON.parse(localStorage.getItem("rentalRecords")) || [];
+            let tableBody = document.getElementById("rentalData");
+            
+            rentalData.forEach((record, index) => {
+                let row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${record.bikeNumber} / ${record.color}</td>
+                    <td>${record.startTime}</td>
+                    <td>${record.endTime}</td>
+                    <td>${record.nickname}</td>
+                    <td>${record.phone}</td>
+                    <td>${record.paymentMethod}</td>
+                    <td>${record.paymentMethod === 'cash' ? record.cashAmount : '-'}</td>
+                    <td>${record.paymentMethod === 'transfer' ? `<a href="${record.transferSlip}" target="_blank">ดูสลิป</a>` : '-'}</td>
+                    <td><input type="checkbox"></td>
+                    <td>${record.notes}</td>
+                    <td class="actions">
+                        <button class="edit">แก้ไข</button>
+                        <button class="share">แชร์</button>
+                        <button class="print">พิมพ์</button>
+                    </td>
+                `;
             });
-            google.accounts.id.prompt();
-        }
+        });
         
-        function loginWithFacebook() {
-            FB.init({
-                appId: "YOUR_FACEBOOK_APP_ID",
-                cookie: true,
-                xfbml: true,
-                version: "v12.0"
-            });
-            FB.login(response => {
-                if (response.authResponse) {
-                    console.log("เข้าสู่ระบบด้วย Facebook สำเร็จ");
-                    window.location.href = "rental_management.html";
-                } else {
-                    alert("เข้าสู่ระบบไม่สำเร็จ");
-                }
-            }, {scope: "public_profile,email"});
-        }
+        document.getElementById("logoutBtn").addEventListener("click", function() {
+            localStorage.removeItem("loggedIn");
+            window.location.href = "login_register.html";
+        });
     </script>
 </body>
 </html>
