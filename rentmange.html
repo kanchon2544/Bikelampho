@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลการเช่าจักรยาน</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            max-width: 1200px;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background: #28a745;
+            color: white;
+        }
+        .actions button {
+            padding: 8px 12px;
+            border: none;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .edit { background: #ffc107; }
+        .share { background: #17a2b8; color: white; }
+        .print { background: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <h2>ข้อมูลการเช่าจักรยาน</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>หมายเลข/สีจักรยาน</th>
+                <th>เวลาเริ่มเช่า</th>
+                <th>เวลาคืน</th>
+                <th>ชื่อเล่น</th>
+                <th>เบอร์โทร</th>
+                <th>วิธีชำระเงิน</th>
+                <th>จำนวนเงิน</th>
+                <th>สลิป</th>
+                <th>คืนจักรยาน</th>
+                <th>หมายเหตุ</th>
+                <th>การจัดการ</th>
+            </tr>
+        </thead>
+        <tbody id="rentalData"></tbody>
+    </table>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let rentalData = JSON.parse(localStorage.getItem("rentalRecords")) || [];
+            let tableBody = document.getElementById("rentalData");
+            
+            rentalData.forEach((record, index) => {
+                let row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${record.bikeNumber} / ${record.color}</td>
+                    <td>${record.startTime}</td>
+                    <td>${record.endTime}</td>
+                    <td>${record.nickname}</td>
+                    <td>${record.phone}</td>
+                    <td>${record.paymentMethod}</td>
+                    <td>${record.paymentMethod === 'cash' ? record.cashAmount : '-'}</td>
+                    <td>${record.paymentMethod === 'transfer' ? `<a href="${record.transferSlip}" target="_blank">ดูสลิป</a>` : '-'}</td>
+                    <td><input type="checkbox"></td>
+                    <td>${record.notes}</td>
+                    <td class="actions">
+                        <button class="edit">แก้ไข</button>
+                        <button class="share">แชร์</button>
+                        <button class="print">พิมพ์</button>
+                    </td>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>
