@@ -77,13 +77,6 @@
         .button:hover {
             background: #218838;
         }
-        .closed-message {
-            color: red;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
@@ -93,60 +86,44 @@
     <div class="clock" id="clock">--:--:--</div>
 
     <div class="container" id="bookingForm">
-        <h2>การจองเช่าจักรยาน</h2>
+        <h2 id="title">การจองเช่าจักรยาน</h2>
 
-        <label for="bikeNumber">หมายเลขจักรยาน / สี</label>
+        <label for="bikeNumber" id="labelBike">หมายเลขจักรยาน / สี</label>
         <input type="text" id="bikeNumber">
 
-        <label for="nickname">ชื่อเล่น</label>
+        <label for="nickname" id="labelName">ชื่อเล่น</label>
         <input type="text" id="nickname">
 
-        <label for="phone">เบอร์โทร</label>
+        <label for="phone" id="labelPhone">เบอร์โทร</label>
         <input type="text" id="phone">
 
-        <label for="payment">วิธีชำระเงิน</label>
+        <label for="payment" id="labelPayment">วิธีชำระเงิน</label>
         <select id="payment">
             <option value="cash">เงินสด</option>
             <option value="transfer">โอนเงิน</option>
         </select>
 
         <div id="cashAmountDiv" class="hidden">
-            <label for="cashAmount">จำนวนเงิน (บาท)</label>
+            <label for="cashAmount" id="labelCash">จำนวนเงิน (บาท)</label>
             <input type="number" id="cashAmount" min="0">
         </div>
 
         <div id="slipUploadDiv" class="hidden">
-            <label for="slipUpload">แนบสลิป</label>
+            <label for="slipUpload" id="labelSlip">แนบสลิป</label>
             <input type="file" id="slipUpload" accept="image/*">
         </div>
-
-        <label for="rentalTime">ระยะเวลาเช่า</label>
-        <select id="rentalTime">
-            <option>1 ชั่วโมง</option>
-            <option>2 ชั่วโมง</option>
-            <option>3 ชั่วโมง</option>
-            <option>4 ชั่วโมง</option>
-            <option>5 ชั่วโมง</option>
-            <option>6 ชั่วโมง</option>
-            <option>1 วัน</option>
-        </select>
-
-        <label for="note">หมายเหตุ</label>
-        <input type="text" id="note">
 
         <button class="button" id="submitButton">ยืนยันการจอง</button>
     </div>
 
     <div class="receipt hidden" id="receipt">
-        <h2>✅ รายละเอียดการเช่า</h2>
-        <p><strong>หมายเลขจักรยาน:</strong> <span id="rBikeNumber"></span></p>
-        <p><strong>ชื่อเล่น:</strong> <span id="rNickname"></span></p>
-        <p><strong>เบอร์โทร:</strong> <span id="rPhone"></span></p>
-        <p><strong>วิธีชำระเงิน:</strong> <span id="rPayment"></span></p>
-        <p id="rCashAmount" class="hidden"><strong>จำนวนเงิน:</strong> <span></span> บาท</p>
-        <p><strong>ระยะเวลาเช่า:</strong> <span id="rRentalTime"></span></p>
-        <p><strong>หมายเหตุ:</strong> <span id="rNote"></span></p>
-        <p><strong>เวลายืนยันการเช่า:</strong> <span id="rTime"></span></p>
+        <h2>ข้อมูลการเช่า</h2>
+        <p><strong>จักรยาน:</strong> <span id="receiptBike"></span></p>
+        <p><strong>ชื่อเล่น:</strong> <span id="receiptName"></span></p>
+        <p><strong>เบอร์โทร:</strong> <span id="receiptPhone"></span></p>
+        <p><strong>วิธีชำระเงิน:</strong> <span id="receiptPayment"></span></p>
+        <p><strong>เวลายืนยัน:</strong> <span id="receiptTime"></span></p>
+        <button class="button" onclick="location.reload()">กลับไปหน้าหลัก</button>
     </div>
 
     <script>
@@ -167,28 +144,48 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        document.getElementById("submitButton").addEventListener("click", function() {
-            let now = new Date();
-            let timeConfirmed = now.toLocaleTimeString();
-
-            document.getElementById("rBikeNumber").innerText = document.getElementById("bikeNumber").value;
-            document.getElementById("rNickname").innerText = document.getElementById("nickname").value;
-            document.getElementById("rPhone").innerText = document.getElementById("phone").value;
-            document.getElementById("rPayment").innerText = document.getElementById("payment").value;
-            document.getElementById("rRentalTime").innerText = document.getElementById("rentalTime").value;
-            document.getElementById("rNote").innerText = document.getElementById("note").value;
-            document.getElementById("rTime").innerText = timeConfirmed;
-
-            if (document.getElementById("payment").value === "cash") {
-                document.getElementById("rCashAmount").classList.remove("hidden");
-                document.getElementById("rCashAmount").querySelector("span").innerText = document.getElementById("cashAmount").value;
+        document.getElementById("payment").addEventListener("change", function() {
+            if (this.value === "cash") {
+                document.getElementById("cashAmountDiv").classList.remove("hidden");
+                document.getElementById("slipUploadDiv").classList.add("hidden");
             } else {
-                document.getElementById("rCashAmount").classList.add("hidden");
+                document.getElementById("cashAmountDiv").classList.add("hidden");
+                document.getElementById("slipUploadDiv").classList.remove("hidden");
             }
+        });
 
+        document.getElementById("submitButton").addEventListener("click", function() {
             document.getElementById("bookingForm").classList.add("hidden");
             document.getElementById("receipt").classList.remove("hidden");
+
+            document.getElementById("receiptBike").innerText = document.getElementById("bikeNumber").value;
+            document.getElementById("receiptName").innerText = document.getElementById("nickname").value;
+            document.getElementById("receiptPhone").innerText = document.getElementById("phone").value;
+            document.getElementById("receiptPayment").innerText = document.getElementById("payment").value === "cash" ? "เงินสด" : "โอนเงิน";
+            
+            let now = new Date();
+            document.getElementById("receiptTime").innerText = now.toLocaleTimeString();
         });
+
+        const translations = {
+            "th": {
+                "title": "การจองเช่าจักรยาน",
+                "submitButton": "ยืนยันการจอง"
+            },
+            "en": {
+                "title": "Bicycle Rental Booking",
+                "submitButton": "Confirm Booking"
+            }
+        };
+
+        let currentLang = "th";
+        document.getElementById("langToggle").addEventListener("click", function() {
+            currentLang = (currentLang === "th") ? "en" : "th";
+            this.innerText = (currentLang === "th") ? "🇹🇭" : "🇺🇸";
+            document.getElementById("title").innerText = translations[currentLang]["title"];
+            document.getElementById("submitButton").innerText = translations[currentLang]["submitButton"];
+        });
+
     </script>
 
 </body>
