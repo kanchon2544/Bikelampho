@@ -6,23 +6,24 @@
     <title>เช่าจักรยาน</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: url(gta.jpg) no-repeat center center/cover;
-            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            height: 100vh;
+            flex-direction: column;
         }
         .container {
-            width: 100%;
-            max-width: 400px;
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
         }
         h2 {
             margin-bottom: 10px;
@@ -80,7 +81,7 @@
 <body>
 
     <div class="container">
-        <img src="lang-icon.png" class="language-toggle" width="30" onclick="changeLanguage()">
+        <img src="thaieng.png" class="language-toggle" width="30" onclick="changeLanguage()">
         <div class="time-display" id="timeDisplay"></div>
         <h2 id="title">การจองเช่าจักรยาน</h2>
         
