@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +7,11 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            background-color: #f4f4f4;
         }
         .container {
             background: white;
@@ -20,75 +19,79 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             text-align: center;
-            max-width: 400px;
-            width: 100%;
+            width: 300px;
         }
-        input, button {
+        input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
+            border: 1px solid #ccc;
             border-radius: 5px;
-            border: 1px solid #ddd;
         }
-        .btn {
-            background-color: #28a745;
-            color: white;
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
-        .btn:hover {
-            background-color: #218838;
-        }
-        .social-login {
-            display: flex;
-            flex-direction: column;
-        }
-        .google, .facebook {
-            background: #007bff;
-            color: white;
-            margin-bottom: 10px;
-        }
-        .google:hover { background: #0056b3; }
-        .facebook { background: #3b5998; }
-        .facebook:hover { background: #2d4373; }
+        .btn-primary { background: #28a745; color: white; }
+        .btn-google { background: #007bff; color: white; }
+        .btn-facebook { background: #3b5998; color: white; }
     </style>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 <body>
     <div class="container">
         <h2>เข้าสู่ระบบ / ลงทะเบียน</h2>
-        <input type="tel" id="phone" placeholder="เบอร์โทร" maxlength="10">
+        <input type="text" id="phone" placeholder="เบอร์โทร">
         <input type="password" id="password" placeholder="รหัสผ่าน (ตัวเลข 6 ตัว)" maxlength="6">
-        <button class="btn" onclick="loginRegister()">เข้าสู่ระบบ / ลงทะเบียน</button>
-        <div class="social-login">
-            <button class="google" onclick="googleLogin()">เข้าสู่ระบบด้วย Google</button>
-            <button class="facebook" onclick="facebookLogin()">เข้าสู่ระบบด้วย Facebook</button>
-        </div>
+        <button class="btn-primary" onclick="loginWithPhone()">เข้าสู่ระบบ / ลงทะเบียน</button>
+        <button class="btn-google" onclick="loginWithGoogle()">เข้าสู่ระบบด้วย Google</button>
+        <button class="btn-facebook" onclick="loginWithFacebook()">เข้าสู่ระบบด้วย Facebook</button>
     </div>
     
     <script>
-        function loginRegister() {
-            let phone = document.getElementById("phone").value;
-            let password = document.getElementById("password").value;
-            if (phone.length !== 10 || password.length !== 6) {
+        function loginWithPhone() {
+            const phone = document.getElementById("phone").value;
+            const password = document.getElementById("password").value;
+            if (phone && password.length === 6) {
+                alert("เข้าสู่ระบบสำเร็จ");
+                window.location.href = "rental_management.html";
+            } else {
                 alert("กรุณากรอกข้อมูลให้ถูกต้อง");
-                return;
             }
-            localStorage.setItem("loggedIn", "true");
-            localStorage.setItem("userPhone", phone);
-            alert("เข้าสู่ระบบสำเร็จ!");
-            window.location.href = "rental_management.html";
         }
-
-        function googleLogin() {
-            alert("เข้าสู่ระบบด้วย Google สำเร็จ!");
-            localStorage.setItem("loggedIn", "true");
-            window.location.href = "rental_management.html";
+        
+        function loginWithGoogle() {
+            google.accounts.id.initialize({
+                client_id: "YOUR_GOOGLE_CLIENT_ID",
+                callback: (response) => {
+                    console.log(response);
+                    window.location.href = "rental_management.html";
+                }
+            });
+            google.accounts.id.prompt();
         }
-
-        function facebookLogin() {
-            alert("เข้าสู่ระบบด้วย Facebook สำเร็จ!");
-            localStorage.setItem("loggedIn", "true");
-            window.location.href = "rental_management.html";
+        
+        function loginWithFacebook() {
+            FB.init({
+                appId: "YOUR_FACEBOOK_APP_ID",
+                cookie: true,
+                xfbml: true,
+                version: "v12.0"
+            });
+            FB.login(response => {
+                if (response.authResponse) {
+                    console.log("เข้าสู่ระบบด้วย Facebook สำเร็จ");
+                    window.location.href = "rental_management.html";
+                } else {
+                    alert("เข้าสู่ระบบไม่สำเร็จ");
+                }
+            }, {scope: "public_profile,email"});
         }
     </script>
 </body>
