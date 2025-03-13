@@ -3,112 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เช่าจักรยาน เกาะลำพู</title>
+    <title>เข้าสู่ระบบ / ลงทะเบียน</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: url(gta.jpg) no-repeat center center/cover;
-            margin: 0;
-            padding: 0;
+            background-color: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
         .container {
-            background: rgba(255, 255, 255, 0.9);
+            background: white;
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 400px;
-            backdrop-filter: blur(10px);
-        }
-        h2 {
             text-align: center;
-            color: #333;
-            font-weight: bold;
+            max-width: 400px;
+            width: 100%;
         }
-        label {
-            font-weight: 600;
-            display: block;
-            margin-top: 10px;
-        }
-        input, select {
+        input, button {
             width: 100%;
             padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
         }
-        .confirm-button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            border: none;
-            background: linear-gradient(135deg, #28a745, #218838);
+        .btn {
+            background-color: #28a745;
             color: white;
-            border-radius: 8px;
+            border: none;
             cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            transition: 0.3s;
         }
-        .confirm-button:hover {
-            background: linear-gradient(135deg, #218838, #1e7e34);
+        .btn:hover {
+            background-color: #218838;
         }
+        .social-login {
+            display: flex;
+            flex-direction: column;
+        }
+        .google, .facebook {
+            background: #007bff;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .google:hover { background: #0056b3; }
+        .facebook { background: #3b5998; }
+        .facebook:hover { background: #2d4373; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Bike Rental Booking</h2>
-        <label>หมายเลขจักรยาน / สีจักรยาน</label>
-        <input type="text" id="bikeNumber" placeholder="หมายเลขจักรยาน">
-        <input type="text" id="color" placeholder="สีจักรยาน">
-
-        <label>เวลาเริ่มเช่า</label>
-        <input type="datetime-local" id="startTime">
-        <label>เวลาคืนจักรยาน</label>
-        <input type="datetime-local" id="endTime">
-
-        <label>ชื่อเล่น</label>
-        <input type="text" id="nickname" placeholder="ชื่อเล่น">
-
-        <label>เบอร์โทร</label>
-        <input type="tel" id="phone" placeholder="เบอร์โทร">
-
-        <label>วิธีการชำระเงิน</label>
-        <select id="paymentMethod" onchange="togglePayment()">
-            <option value="cash">เงินสด</option>
-            <option value="transfer">โอน</option>
-        </select>
-        <input type="number" id="cashAmount" placeholder="จำนวนเงิน" style="display: none;">
-        <input type="file" id="transferSlip" accept="image/*" style="display: none;">
-
-        <label>จำนวนชั่วโมงที่เช่า</label>
-        <select id="rentalDuration">
-            <option value="1 hour">1 ชั่วโมง</option>
-            <option value="2 hours">2 ชั่วโมง</option>
-            <option value="1 day">1 วัน</option>
-        </select>
-
-        <label>หมายเหตุ</label>
-        <input type="text" id="notes" placeholder="หมายเหตุ">
-
-        <button class="confirm-button" onclick="confirmBooking()">ยืนยันการจอง!!</button>
+        <h2>เข้าสู่ระบบ / ลงทะเบียน</h2>
+        <input type="tel" id="phone" placeholder="เบอร์โทร" maxlength="10">
+        <input type="password" id="password" placeholder="รหัสผ่าน (ตัวเลข 6 ตัว)" maxlength="6">
+        <button class="btn" onclick="loginRegister()">เข้าสู่ระบบ / ลงทะเบียน</button>
+        <div class="social-login">
+            <button class="google" onclick="googleLogin()">เข้าสู่ระบบด้วย Google</button>
+            <button class="facebook" onclick="facebookLogin()">เข้าสู่ระบบด้วย Facebook</button>
+        </div>
     </div>
-
+    
     <script>
-        function togglePayment() {
-            let method = document.getElementById("paymentMethod").value;
-            document.getElementById("cashAmount").style.display = method === "cash" ? "block" : "none";
-            document.getElementById("transferSlip").style.display = method === "transfer" ? "block" : "none";
+        function loginRegister() {
+            let phone = document.getElementById("phone").value;
+            let password = document.getElementById("password").value;
+            if (phone.length !== 10 || password.length !== 6) {
+                alert("กรุณากรอกข้อมูลให้ถูกต้อง");
+                return;
+            }
+            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("userPhone", phone);
+            alert("เข้าสู่ระบบสำเร็จ!");
+            window.location.href = "rental_management.html";
         }
 
-        function confirmBooking() {
-            alert("การจองของคุณได้รับการยืนยันแล้ว!");
+        function googleLogin() {
+            alert("เข้าสู่ระบบด้วย Google สำเร็จ!");
+            localStorage.setItem("loggedIn", "true");
+            window.location.href = "rental_management.html";
+        }
+
+        function facebookLogin() {
+            alert("เข้าสู่ระบบด้วย Facebook สำเร็จ!");
+            localStorage.setItem("loggedIn", "true");
+            window.location.href = "rental_management.html";
         }
     </script>
 </body>
