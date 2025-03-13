@@ -3,128 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ข้อมูลการเช่าจักรยาน</title>
+    <title>เช่าจักรยาน เกาะลำพู</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f4f4f4;
+            background: url(gta.jpg) no-repeat center center/cover;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
         }
         h2 {
             text-align: center;
             color: #333;
+            font-weight: bold;
         }
-        table {
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 10px;
+        }
+        input, select {
             width: 100%;
-            max-width: 1200px;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        th {
-            background: #28a745;
-            color: white;
-        }
-        .actions button {
-            padding: 8px 12px;
-            border: none;
-            margin: 5px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .edit { background: #ffc107; }
-        .share { background: #17a2b8; color: white; }
-        .print { background: #007bff; color: white; }
-        .logout {
-            margin-top: 20px;
-            padding: 12px 20px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            cursor: pointer;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
             border-radius: 8px;
             font-size: 16px;
-            font-weight: bold;
-            transition: background 0.3s ease;
         }
-        .logout:hover {
-            background: #c82333;
-        }
-        .container {
+        .confirm-button {
+            display: block;
             width: 100%;
-            max-width: 1200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .confirm-button:hover {
+            background: linear-gradient(135deg, #218838, #1e7e34);
+        }
+        .receipt {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+            text-align: center;
+            max-width: 400px;
+        }
+        .receipt h3 {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>ข้อมูลการเช่าจักรยาน</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>หมายเลข/สีจักรยาน</th>
-                    <th>เวลาเริ่มเช่า</th>
-                    <th>เวลาคืน</th>
-                    <th>ชื่อเล่น</th>
-                    <th>เบอร์โทร</th>
-                    <th>วิธีชำระเงิน</th>
-                    <th>จำนวนเงิน</th>
-                    <th>สลิป</th>
-                    <th>คืนจักรยาน</th>
-                    <th>หมายเหตุ</th>
-                    <th>การจัดการ</th>
-                </tr>
-            </thead>
-            <tbody id="rentalData"></tbody>
-        </table>
-        <button class="logout" id="logoutBtn">ออกจากระบบ</button>
+        <h2>Bike Rental Booking</h2>
+        <label>หมายเลขจักรยาน / สีจักรยาน</label>
+        <input type="text" id="bikeNumber" placeholder="หมายเลขจักรยาน">
+        <input type="text" id="color" placeholder="สีจักรยาน">
+
+        <label>เวลาเริ่มเช่า</label>
+        <input type="datetime-local" id="startTime">
+        <label>เวลาคืนจักรยาน</label>
+        <input type="datetime-local" id="endTime">
+
+        <label>ชื่อเล่น</label>
+        <input type="text" id="nickname" placeholder="ชื่อเล่น">
+
+        <label>เบอร์โทร</label>
+        <input type="tel" id="phone" placeholder="เบอร์โทร">
+
+        <label>วิธีการชำระเงิน</label>
+        <select id="paymentMethod" onchange="togglePayment()">
+            <option value="cash">เงินสด</option>
+            <option value="transfer">โอน</option>
+        </select>
+        <input type="number" id="cashAmount" placeholder="จำนวนเงิน" style="display: none;">
+        <input type="file" id="transferSlip" accept="image/*" style="display: none;">
+
+        <label>จำนวนชั่วโมงที่เช่า</label>
+        <select id="rentalDuration">
+            <option value="1 hour">1 ชั่วโมง</option>
+            <option value="2 hours">2 ชั่วโมง</option>
+            <option value="1 day">1 วัน</option>
+        </select>
+
+        <label>หมายเหตุ</label>
+        <input type="text" id="notes" placeholder="หมายเหตุ">
+
+        <button class="confirm-button" onclick="confirmBooking()">ยืนยันการจอง!!</button>
     </div>
-    
+
+    <div class="receipt" id="receipt">
+        <h3>บิลสรุปการเช่า</h3>
+        <p id="receiptContent"></p>
+    </div>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            let rentalData = JSON.parse(localStorage.getItem("rentalRecords")) || [];
-            let tableBody = document.getElementById("rentalData");
+        function togglePayment() {
+            let method = document.getElementById("paymentMethod").value;
+            document.getElementById("cashAmount").style.display = method === "cash" ? "block" : "none";
+            document.getElementById("transferSlip").style.display = method === "transfer" ? "block" : "none";
+        }
+
+        function confirmBooking() {
+            let bikeNumber = document.getElementById("bikeNumber").value;
+            let color = document.getElementById("color").value;
+            let startTime = document.getElementById("startTime").value;
+            let endTime = document.getElementById("endTime").value;
+            let nickname = document.getElementById("nickname").value;
+            let phone = document.getElementById("phone").value;
+            let paymentMethod = document.getElementById("paymentMethod").value;
+            let amount = paymentMethod === "cash" ? document.getElementById("cashAmount").value : "โอนเงิน";
+            let duration = document.getElementById("rentalDuration").value;
+            let notes = document.getElementById("notes").value;
+
+            let receiptText = `หมายเลขจักรยาน: ${bikeNumber} \nสีจักรยาน: ${color} \nเวลาเริ่มเช่า: ${startTime} \nเวลาคืนจักรยาน: ${endTime} \nชื่อเล่น: ${nickname} \nเบอร์โทร: ${phone} \nวิธีชำระเงิน: ${paymentMethod} (${amount}) \nจำนวนชั่วโมงที่เช่า: ${duration} \nหมายเหตุ: ${notes}`;
             
-            rentalData.forEach((record, index) => {
-                let row = tableBody.insertRow();
-                row.innerHTML = `
-                    <td>${record.bikeNumber} / ${record.color}</td>
-                    <td>${record.startTime}</td>
-                    <td>${record.endTime}</td>
-                    <td>${record.nickname}</td>
-                    <td>${record.phone}</td>
-                    <td>${record.paymentMethod}</td>
-                    <td>${record.paymentMethod === 'cash' ? record.cashAmount : '-'}</td>
-                    <td>${record.paymentMethod === 'transfer' ? `<a href="${record.transferSlip}" target="_blank">ดูสลิป</a>` : '-'}</td>
-                    <td><input type="checkbox"></td>
-                    <td>${record.notes}</td>
-                    <td class="actions">
-                        <button class="edit">แก้ไข</button>
-                        <button class="share">แชร์</button>
-                        <button class="print">พิมพ์</button>
-                    </td>
-                `;
-            });
-        });
-        
-        document.getElementById("logoutBtn").addEventListener("click", function() {
-            localStorage.removeItem("loggedIn");
-            window.location.href = "login_register.html";
-        });
+            document.getElementById("receiptContent").innerText = receiptText;
+            document.getElementById("receipt").style.display = "block";
+        }
     </script>
 </body>
 </html>
