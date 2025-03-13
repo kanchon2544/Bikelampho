@@ -3,204 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bike Rental Booking</title>
+    <title>เช่าจักรยาน</title>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: Arial, sans-serif;
             background: url(gta.jpg) no-repeat center center/cover;
-            margin: 0;
-            padding: 0;
+            background: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
         }
         .container {
-            width: 90%;
-            max-width: 500px;
+            width: 100%;
+            max-width: 400px;
             background: white;
             padding: 20px;
-            margin: 20px auto;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
         }
-        .clock {
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: black;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 18px;
-        }
-        h1 {
-            margin-bottom: 20px;
+        h2 {
+            margin-bottom: 10px;
         }
         label {
             display: block;
-            margin-top: 10px;
             text-align: left;
+            margin-top: 10px;
+            font-weight: bold;
         }
-        input, select, textarea {
+        input, select {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             margin-top: 5px;
+            border: 1px solid #ccc;
             border-radius: 5px;
-            border: 1px solid #ddd;
         }
-        button {
-            width: 100%;
-            padding: 10px;
+        .button {
+            margin-top: 15px;
             background: #28a745;
             color: white;
+            padding: 10px;
             border: none;
+            width: 100%;
             border-radius: 5px;
-            margin-top: 20px;
             cursor: pointer;
         }
-        button:disabled {
-            background: gray;
-            cursor: not-allowed;
+        .button:hover {
+            background: #218838;
         }
-        .hidden {
-            display: none;
-        }
-        .language-switch {
+        .language-toggle {
             position: absolute;
             top: 10px;
             right: 10px;
-        }
-        .language-switch button {
-            background: none;
-            border: none;
             cursor: pointer;
-            margin: 0 5px;
         }
-        .language-switch img {
-            width: 30px;
-            height: 30px;
+        .info-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: #dff0d8;
+            border-left: 5px solid #28a745;
+            display: none;
+        }
+        .time-display {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 10px;
+            background: #000;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
-    <!-- ปุ่มเปลี่ยนภาษา -->
-    <div class="language-switch">
-        <button onclick="changeLanguage('th')"><img src="thai.png" alt="TH"></button>
-        <button onclick="changeLanguage('en')"><img src="eng.png" alt="EN"></button>
-    </div>
-
     <div class="container">
-        <div class="clock" id="clock"></div>
+        <img src="lang-icon.png" class="language-toggle" width="30" onclick="changeLanguage()">
+        <div class="time-display" id="timeDisplay"></div>
+        <h2 id="title">การจองเช่าจักรยาน</h2>
+        
+        <label for="bikeNumber" id="labelBike">หมายเลขจักรยาน / สี</label>
+        <input type="text" id="bikeNumber" placeholder="กรอกหมายเลขจักรยาน">
 
-        <h1 id="title">การจองเช่าจักรยาน</h1>
+        <label for="nickname" id="labelNickname">ชื่อเล่น</label>
+        <input type="text" id="nickname" placeholder="กรอกชื่อเล่น">
 
-        <form id="rentalForm">
-            <label for="bikeNumber">หมายเลขจักรยาน / สีจักรยาน</label>
-            <input type="text" id="bikeNumber" required>
+        <label for="phone" id="labelPhone">เบอร์โทร</label>
+        <input type="text" id="phone" placeholder="กรอกเบอร์โทร">
 
-            <label for="nickname">ชื่อเล่น</label>
-            <input type="text" id="nickname" required>
+        <label for="payment" id="labelPayment">วิธีชำระเงิน</label>
+        <select id="payment">
+            <option value="cash">เงินสด</option>
+            <option value="transfer">โอนเงิน</option>
+        </select>
 
-            <label for="phone">เบอร์โทร</label>
-            <input type="tel" id="phone" required>
+        <label for="rentalTime" id="labelRentalTime">ระยะเวลาเช่า</label>
+        <select id="rentalTime">
+            <option>1 ชั่วโมง</option>
+            <option>2 ชั่วโมง</option>
+            <option>3 ชั่วโมง</option>
+            <option>4 ชั่วโมง</option>
+            <option>5 ชั่วโมง</option>
+            <option>6 ชั่วโมง</option>
+            <option>1 วัน</option>
+        </select>
 
-            <label for="payment">วิธีชำระเงิน</label>
-            <select id="payment" onchange="togglePaymentFields()" required>
-                <option value="cash">เงินสด</option>
-                <option value="transfer">โอนเงิน</option>
-            </select>
+        <label for="note" id="labelNote">หมายเหตุ</label>
+        <input type="text" id="note" placeholder="หมายเหตุเพิ่มเติม">
 
-            <div id="cashAmount" class="hidden">
-                <label for="amount">จำนวนเงิน (บาท)</label>
-                <input type="number" id="amount">
-            </div>
+        <button class="button" onclick="confirmBooking()">ยืนยันการจอง</button>
 
-            <div id="transferSlip" class="hidden">
-                <label for="slip">อัปโหลดสลิปโอนเงิน</label>
-                <input type="file" id="slip">
-            </div>
-
-            <label for="rentalTime">ระยะเวลาเช่า</label>
-            <select id="rentalTime" required>
-                <option value="1">1 ชั่วโมง</option>
-                <option value="2">2 ชั่วโมง</option>
-                <option value="3">3 ชั่วโมง</option>
-                <option value="4">4 ชั่วโมง</option>
-                <option value="5">5 ชั่วโมง</option>
-                <option value="6">6 ชั่วโมง</option>
-                <option value="day">1 วัน</option>
-            </select>
-
-            <label for="note">หมายเหตุ</label>
-            <textarea id="note"></textarea>
-
-            <button type="submit" id="confirmBtn">ยืนยันการจอง</button>
-        </form>
-
-        <!-- แสดงข้อมูลการจอง -->
-        <div id="bookingDetails" class="hidden">
-            <h2>ข้อมูลการจอง</h2>
-            <p><strong>หมายเลขจักรยาน:</strong> <span id="displayBikeNumber"></span></p>
-            <p><strong>ชื่อเล่น:</strong> <span id="displayNickname"></span></p>
-            <p><strong>เบอร์โทร:</strong> <span id="displayPhone"></span></p>
-            <p><strong>วิธีชำระเงิน:</strong> <span id="displayPayment"></span></p>
-            <p><strong>ระยะเวลาเช่า:</strong> <span id="displayRentalTime"></span></p>
-            <p><strong>หมายเหตุ:</strong> <span id="displayNote"></span></p>
-            <p><strong>เวลาการจอง:</strong> <span id="displayBookingTime"></span></p>
+        <div class="info-box" id="infoBox">
+            <h3>ข้อมูลการจอง</h3>
+            <p id="bookingDetails"></p>
         </div>
     </div>
 
     <script>
-        function updateClock() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-            document.getElementById("clock").innerText = formattedTime;
+        let currentLang = "th";
 
-            const confirmBtn = document.getElementById("confirmBtn");
-            if (hours < 9 || hours >= 20) {
-                confirmBtn.disabled = true;
-            } else {
-                confirmBtn.disabled = false;
-            }
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        function changeLanguage(lang) {
+        function changeLanguage() {
             const translations = {
-                en: { title: "Bike Rental Booking", confirmBtn: "Confirm Booking" },
-                th: { title: "การจองเช่าจักรยาน", confirmBtn: "ยืนยันการจอง" }
+                th: {
+                    title: "การจองเช่าจักรยาน",
+                    bike: "หมายเลขจักรยาน / สี",
+                    nickname: "ชื่อเล่น",
+                    phone: "เบอร์โทร",
+                    payment: "วิธีชำระเงิน",
+                    rentalTime: "ระยะเวลาเช่า",
+                    note: "หมายเหตุ",
+                    confirm: "ยืนยันการจอง"
+                },
+                en: {
+                    title: "Bike Rental Booking",
+                    bike: "Bike Number / Color",
+                    nickname: "Nickname",
+                    phone: "Phone Number",
+                    payment: "Payment Method",
+                    rentalTime: "Rental Duration",
+                    note: "Notes",
+                    confirm: "Confirm Booking"
+                }
             };
-            document.getElementById("title").innerText = translations[lang].title;
-            document.getElementById("confirmBtn").innerText = translations[lang].confirmBtn;
+
+            currentLang = currentLang === "th" ? "en" : "th";
+
+            document.getElementById("title").innerText = translations[currentLang].title;
+            document.getElementById("labelBike").innerText = translations[currentLang].bike;
+            document.getElementById("labelNickname").innerText = translations[currentLang].nickname;
+            document.getElementById("labelPhone").innerText = translations[currentLang].phone;
+            document.getElementById("labelPayment").innerText = translations[currentLang].payment;
+            document.getElementById("labelRentalTime").innerText = translations[currentLang].rentalTime;
+            document.getElementById("labelNote").innerText = translations[currentLang].note;
+            document.querySelector(".button").innerText = translations[currentLang].confirm;
         }
 
-        function togglePaymentFields() {
-            const paymentMethod = document.getElementById("payment").value;
-            document.getElementById("cashAmount").classList.toggle("hidden", paymentMethod !== "cash");
-            document.getElementById("transferSlip").classList.toggle("hidden", paymentMethod !== "transfer");
+        function confirmBooking() {
+            const bikeNumber = document.getElementById("bikeNumber").value;
+            const nickname = document.getElementById("nickname").value;
+            const phone = document.getElementById("phone").value;
+            const payment = document.getElementById("payment").value;
+            const rentalTime = document.getElementById("rentalTime").value;
+            const note = document.getElementById("note").value;
+            const currentTime = new Date().toLocaleTimeString();
+
+            document.getElementById("bookingDetails").innerHTML = `
+                <strong>หมายเลขจักรยาน:</strong> ${bikeNumber} <br>
+                <strong>ชื่อเล่น:</strong> ${nickname} <br>
+                <strong>เบอร์โทร:</strong> ${phone} <br>
+                <strong>วิธีชำระเงิน:</strong> ${payment} <br>
+                <strong>ระยะเวลาเช่า:</strong> ${rentalTime} <br>
+                <strong>หมายเหตุ:</strong> ${note} <br>
+                <strong>เวลาจอง:</strong> ${currentTime}
+            `;
+            document.getElementById("infoBox").style.display = "block";
         }
 
-        document.getElementById("rentalForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-
-            document.getElementById("displayBikeNumber").innerText = document.getElementById("bikeNumber").value;
-            document.getElementById("displayNickname").innerText = document.getElementById("nickname").value;
-            document.getElementById("displayPhone").innerText = document.getElementById("phone").value;
-            document.getElementById("displayPayment").innerText = document.getElementById("payment").value;
-            document.getElementById("displayRentalTime").innerText = document.getElementById("rentalTime").value;
-            document.getElementById("displayNote").innerText = document.getElementById("note").value;
-            document.getElementById("displayBookingTime").innerText = new Date().toLocaleString();
-
-            document.getElementById("bookingDetails").classList.remove("hidden");
-        });
+        function updateTime() {
+            document.getElementById("timeDisplay").innerText = "ร้านเปิด 09:00 - ปิด 20:00";
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
     </script>
 
 </body>
